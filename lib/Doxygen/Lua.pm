@@ -143,6 +143,10 @@ L<http://search.cpan.org/dist/Doxygen-Lua/>
 
 =head1 ACKNOWLEDGEMENTS
 
+=head1 REPOSITORY
+
+See http://github.com/alecchen/doxygen-lua
+
 =head1 LICENSE AND COPYRIGHT
 
 Copyright 2010 Alec Chen.
