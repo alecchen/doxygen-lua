@@ -6,7 +6,7 @@ use Moose;
 
 =head1 NAME
 
-Doxygen::Lua - A preprocessor to make doxygen support lua
+Doxygen::Lua - Make Doxygen support Lua
 
 =head1 VERSION
 
@@ -22,6 +22,14 @@ has 'mark' => ( is => 'rw', isa => 'Str', default => '--!' );
     use Doxygen::Lua;
     my $p = Doxygen::Lua->new;
     print $p->parse($input);
+
+=head1 DESCRIPTION
+
+A script named "lua2dox" will be installed. Then modify your Doxyfile as below:
+
+    FILTER_PATTERNS = *.lua=../bin/lua2dox
+
+That's all!
 
 =head1 SUBROUTINES/METHODS
 
@@ -40,9 +48,11 @@ This function will parse the given input file and return the result.
 sub parse {
     my $self = shift;
     my $input = shift;
+
     my $in_block = 0;
     my $block_name = q{};
     my $result = q{};
+
     my $mark = $self->mark;
      
     open FH, "<$input"
@@ -54,10 +64,9 @@ sub parse {
         # comments
         next if $line =~ /^\s*--[^!]/;
         $line =~ s/--[^!].*//;
+        $line =~ s{$mark}{///};
 
-        if ($line =~ s{$mark}{///}) {
-        }
-        elsif ($line =~ /==/) {
+        if ($line =~ /==/) {
             next;
         }
         # function
@@ -74,10 +83,10 @@ sub parse {
             $in_block = 0;
             next;
         }
+        # variables
         elsif ($line =~ /=/) {
-            $line =~ s/,\s*$//;
             $line =~ s/(?=\S)/$block_name./ if $block_name;
-            $line .= ";";
+            $line =~ s{,?(\s*)(?=///|$)}{;$1};
         }
         else {
             next;

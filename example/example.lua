@@ -3,11 +3,10 @@
 --! @brief a Doxygen::Lua example
 ---------------------------------
 
---! table is supported
-
 PARAMETER = {
+    --! table is supported
     a = 1,
-    b = 2,
+    b = 2, --! end of line comment is also supported
     c = 3,
 }
 
