@@ -2,10 +2,11 @@ package Doxygen::Lua;
 
 use warnings;
 use strict;
+use Moose;
 
 =head1 NAME
 
-Doxygen::Lua - The great new Doxygen::Lua!
+Doxygen::Lua - A preprocessor to make doxygen support lua
 
 =head1 VERSION
 
@@ -14,39 +15,86 @@ Version 0.01
 =cut
 
 our $VERSION = '0.01';
-
+has 'mark' => ( is => 'rw', isa => 'Str', default => '--!' );
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
-
-Perhaps a little code snippet.
-
     use Doxygen::Lua;
-
-    my $foo = Doxygen::Lua->new();
-    ...
-
-=head1 EXPORT
-
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
+    my $p = Doxygen::Lua->new;
+    print $p->parse($input);
 
 =head1 SUBROUTINES/METHODS
 
-=head2 function1
+=head2 new
+
+This function will create a Doxygen::Lua object.
 
 =cut
 
-sub function1 {
-}
+=head2 parse
 
-=head2 function2
+This function will parse the given input file and return the result.
 
 =cut
 
-sub function2 {
+sub parse {
+    my $self = shift;
+    my $input = shift;
+    my $in_block = 0;
+    my $block_name = q{};
+    my $result = q{};
+    my $mark = $self->mark;
+     
+    open FH, "<$input"
+        or die "Can't open $input for reading: $!";
+     
+    foreach my $line (<FH>) {
+        chomp($line);
+
+        # comments
+        next if $line =~ /^\s*--[^!]/;
+        $line =~ s/--[^!].*//;
+
+        if ($line =~ s{$mark}{///}) {
+        }
+        elsif ($line =~ /==/) {
+            next;
+        }
+        # function
+        elsif ($line =~ /function/) {
+            $line .= q{;};
+        }
+        # block start
+        elsif ($line =~ /^(\S+)\s*=\s*{/ && $line !~ /}/) {
+            $block_name = $1; $in_block = 1;
+            next;
+        }
+        elsif ($line =~ /^\s*}/ && $in_block == 1) {
+            $block_name = q{};
+            $in_block = 0;
+            next;
+        }
+        elsif ($line =~ /=/) {
+            $line =~ s/,\s*$//;
+            $line =~ s/(?=\S)/$block_name./ if $block_name;
+            $line .= ";";
+        }
+        else {
+            next;
+        }
+
+        $result .= "$line\n";
+    }
+
+    close FH;
+    return $result;
 }
+
+=head2 mark
+
+This function will set the mark style. The default value is "--!".
+
+=cut
 
 =head1 AUTHOR
 
@@ -54,19 +102,13 @@ Alec Chen, C<< <alec at cpan.org> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-doxygen-lua at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Doxygen-Lua>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
-
-
+Please report any bugs or feature requests to C<bug-doxygen-lua at rt.cpan.org>, or through the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Doxygen-Lua>.  I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
 
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
     perldoc Doxygen::Lua
-
 
 You can also look for information at:
 
@@ -90,9 +132,7 @@ L<http://search.cpan.org/dist/Doxygen-Lua/>
 
 =back
 
-
 =head1 ACKNOWLEDGEMENTS
-
 
 =head1 LICENSE AND COPYRIGHT
 
@@ -103,7 +143,6 @@ under the terms of either: the GNU General Public License as published
 by the Free Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
-
 
 =cut
 
