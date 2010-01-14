@@ -7,7 +7,9 @@ modify your Doxyfile as below:
 
     FILTER_PATTERNS = *.lua=/path/to/your/lua2dox
 
-Then you can document lua files as same as c files.
+That's all! Then you can document lua files as same as c files! 
+
+Run "doxygen" in the "example" directory can generate a example documentation.
 
 
 INSTALLATION
