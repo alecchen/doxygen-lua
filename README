@@ -1,15 +1,13 @@
 Doxygen-Lua
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+Doxygen::Lua is a preprocessor to make Doxygen support Lua syntax.
 
-A README file is required for CPAN modules since CPAN extracts the README
-file from a module distribution so that people browsing the archive
-can use it to get an idea of the module's uses. It is usually a good idea
-to provide version information here so that people can decide whether
-fixes for the module are worth downloading.
+A script named "lua2dox" is shipped with this module. Just simply
+modify your Doxyfile as below:
+
+    FILTER_PATTERNS = *.lua=/path/to/your/lua2dox
+
+Then you can document lua files as same as c files.
 
 
 INSTALLATION
