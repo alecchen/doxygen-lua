@@ -9,6 +9,9 @@ modify your Doxyfile as below:
 
 That's all! Then you can document lua files as same as c files! 
 
+The default doxygen mark is '--!'. It can be chnaged by "mark" method.
+Please see Doxygen::Lua perldoc for detail information.
+
 Run "doxygen" in the "example" directory can generate a example documentation.
 
 
