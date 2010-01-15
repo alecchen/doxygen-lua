@@ -10,11 +10,11 @@ Doxygen::Lua - Make Doxygen support Lua
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 has 'mark' => ( is => 'rw', isa => 'Str', default => '--!' );
 
 =head1 SYNOPSIS
@@ -50,6 +50,7 @@ sub parse {
     my $input = shift;
 
     my $in_block = 0;
+    my $in_function = 0;
     my $block_name = q{};
     my $result = q{};
 
@@ -59,40 +60,46 @@ sub parse {
         or die "Can't open $input for reading: $!";
      
     foreach my $line (<FH>) {
-        chomp($line);
+        chomp $line;
 
-        # comments
+        # skip normal comments
         next if $line =~ /^\s*--[^!]/;
+        # remove end of line comments
         $line =~ s/--[^!].*//;
+        # skip comparison
+        next if $line =~ /==/;
+        # translate to doxygen mark
         $line =~ s{$mark}{///};
 
-        if ($line =~ /==/) {
-            next;
+        if ($line =~ m{^\s*///}) {
+            $result .= "$line\n";
         }
-        # function
-        elsif ($line =~ /function/) {
+        # function start
+        elsif ($line =~ /^function/) {
+            $in_function = 1;
             $line .= q{;};
+            $result .= "$line\n";
+        }
+        # function end
+        elsif ($in_function == 1 && $line =~ /^end/) {
+            $in_function = 0;
         }
         # block start
-        elsif ($line =~ /^(\S+)\s*=\s*{/ && $line !~ /}/) {
-            $block_name = $1; $in_block = 1;
-            next;
+        elsif ($in_function == 0 && $line =~ /^(\S+)\s*=\s*{/ && $line !~ /}/) {
+            $block_name = $1; 
+            $in_block = 1;
         }
-        elsif ($line =~ /^\s*}/ && $in_block == 1) {
+        # block end
+        elsif ($in_function == 0 && $line =~ /^\s*}/ && $in_block == 1) {
             $block_name = q{};
             $in_block = 0;
-            next;
         }
         # variables
-        elsif ($line =~ /=/) {
+        elsif ($in_function == 0 && $line =~ /=/) {
             $line =~ s/(?=\S)/$block_name./ if $block_name;
             $line =~ s{,?(\s*)(?=///|$)}{;$1};
+            $result .= "$line\n";
         }
-        else {
-            next;
-        }
-
-        $result .= "$line\n";
     }
 
     close FH;

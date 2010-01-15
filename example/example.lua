@@ -21,6 +21,8 @@ EMAIL = 'alec@cpan.org'
 --! @return return the product of all positive integers less than or equal to n
 
 function factorial(n)
+    x = 10
+    y = 20
     if n == 0 then
         return 1
     else
