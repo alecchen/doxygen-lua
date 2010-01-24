@@ -1,4 +1,4 @@
-use inc::Module::Install;
+use inc::Module::Install 0.92; #0.92 has support for better ppd/OS package generation
 
 name     'Doxygen-Lua';
 all_from 'lib/Doxygen/Lua.pm';
@@ -11,4 +11,5 @@ requires 'Moose';
 install_script 'bin/lua2dox';
 auto_install;
 
+repository 'http://github.com/alecchen/doxygen-lua';
 WriteAll;
