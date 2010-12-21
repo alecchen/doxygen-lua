@@ -29,3 +29,18 @@ function factorial(n)
         return n * factorial(n - 1)
     end
 end
+
+--! a function namespace
+luaCharacter = inheritsFrom( nil, "luaCharacter" )
+
+--! @brief luaCharacter:reset
+function luaCharacter:reset()
+end 
+
+--! @brief luaCharacter:destroy
+function luaCharacter:destroy()
+end 
+
+--! @brief luaCharacter:entry_point
+function luaCharacter:entry_point()
+end 
