@@ -30,6 +30,10 @@ function factorial(n)
     end
 end
 
+--! @brief a simple function declared local
+local function localFunction()
+end
+
 --! a function namespace
 luaCharacter = inheritsFrom( nil, "luaCharacter" )
 
